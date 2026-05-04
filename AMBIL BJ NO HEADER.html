@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>SIGAP | Sistem Digital Pengambilan Agunan Pegadaian</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #e8f5e9, #fff9e6);
+  margin: 0;
+  padding: 40px 0;
+}
+
+.logo-main {
+  text-align: center;
+  margin-bottom: -55px;
+  position: relative;
+  z-index: 2;
+}
+
+.logo-main img {
+  width: 170px;
+  height: auto;
+  display: block;
+  margin: auto;
+  background: white;
+  padding: 10px;
+  border-radius: 16px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+.tagline {
+  font-size: 14px;
+  color: #007a3d;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+
+.container {
+  max-width: 420px;
+  margin: 0 auto;
+  background: white;
+  padding: 95px 20px 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  border-top: 6px solid #ffd700;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+
+.kredit-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 5px;
+  margin-bottom: 14px;
+}
+
+.kredit-box {
+  padding: 8px;
+  text-align: center;
+  font-size: 16px;
+  border: 2px solid #006837;
+  border-radius: 6px;
+  outline: none;
+}
+
+.kredit-box:nth-child(1) { width: 70px; }
+.kredit-box:nth-child(2),
+.kredit-box:nth-child(3) { width: 45px; }
+.kredit-box:nth-child(4) { width: 80px; }
+.kredit-box:nth-child(5) { width: 35px; }
+
+.kredit-box:focus {
+  border-color: #f4c542;
+  box-shadow: 0 0 5px rgba(244,197,66,0.6);
+}
+
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #003d1f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #004f2b;
+  color: white;
+}
+
+
+#notif {
+  display: none;
+  background: #e6f9ec;
+  color: #007a3d;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 10px;
+  border-left: 4px solid #ffd700;
+}
+
+
+.footer {
+  text-align: center;
+  font-size: 11px;
+  margin-top: 20px;
+  color: #777;
+}
+</style>
+</head>
+
+<body>
+
+
+<div class="logo-main">
+  <img src="https://drive.google.com/thumbnail?id=1eeX9iDGEyg0R3ktgKQlI6lKRTlrH5_qI&sz=w500" alt="Logo SIGAP">
+  <div class="tagline">Melayani Sepenuh Hati</div>
+</div>
+
+<div class="container">
+
+  <div id="notif">✅ Permintaan berhasil dikirim</div>
+
+  <label>Nama Nasabah</label>
+  <input type="text" id="nama">
+
+  <label>No Kredit</label>
+  <div class="kredit-container">
+    <input type="text" maxlength="5" class="kredit-box">
+    <input type="text" maxlength="2" class="kredit-box">
+    <input type="text" maxlength="2" class="kredit-box">
+    <input type="text" maxlength="6" class="kredit-box">
+    <input type="text" maxlength="1" class="kredit-box">
+  </div>
+
+  <label>Tanggal Kredit</label>
+  <input type="date" id="tanggal">
+
+  <label>Uang Pinjaman</label>
+  <input type="text" id="UP">
+
+  <button onclick="kirimWA()">Kirim ke WhatsApp</button>
+
+  <div class="footer">
+    Prototype Internal Cabang • Digitalisasi Layanan
+  </div>
+
+</div>
+
+<script>
+
+document.querySelectorAll('.kredit-box').forEach((box, index, boxes) => {
+  box.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+    if (this.value.length === this.maxLength && index < boxes.length - 1) {
+      boxes[index + 1].focus();
+    }
+  });
+
+  box.addEventListener('keydown', function(e) {
+    if (e.key === "Backspace" && this.value.length === 0 && index > 0) {
+      boxes[index - 1].focus();
+    }
+  });
+});
+
+
+function kirimWA() {
+  var nama = document.getElementById("nama").value;
+  var tanggal = document.getElementById("tanggal").value;
+  var UP = document.getElementById("UP").value;
+
+  var kreditBoxes = document.querySelectorAll(".kredit-box");
+  var kredit = Array.from(kreditBoxes).map(box => box.value).join(" ");
+
+  if (!nama || !kredit.trim() || !tanggal || !UP) {
+    alert("Harap isi semua data terlebih dahulu!");
+    return;
+  }
+
+  var pesan = `*REQUEST PENGAMBILAN BJ*
+
+Nama       : ${nama}
+No Kredit : ${kredit}
+Tanggal    : ${tanggal}
+UP            : ${UP}
+Status      : Menunggu pengambilan`;
+
+  var nomorWA = "6287899220501";
+  var url = "https://wa.me/" + nomorWA + "?text=" + encodeURIComponent(pesan);
+
+  window.open(url, "_blank");
+
+  document.getElementById("notif").style.display = "block";
+
+  setTimeout(() => {
+    document.getElementById("notif").style.display = "none";
+  }, 2000);
+
+  document.getElementById("nama").value = "";
+  document.getElementById("tanggal").value = "";
+  document.getElementById("UP").value = "";
+  kreditBoxes.forEach(box => box.value = "");
+}
+</script>
+
+</body>
+</html>
